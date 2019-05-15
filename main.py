@@ -35,14 +35,13 @@ def next_state(cell,board):
 	an = alive_neighbors(cell,board)
 	if cell.alive:
 		if an < 2 or an > 3:
-			return "dies"
+			return False
 		else:
-			return "lives"
+			return True
 			
 	elif not cell.alive:
 		if an == 3:
-			return "lives"
-	return "nothing"
+			return True
 	
 def draw_start_pattern(board):
 	while True:
@@ -50,6 +49,7 @@ def draw_start_pattern(board):
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				sys.exit()
+			# Right mouse click turns cells on
 			if pygame.mouse.get_pressed()[0]:
 				pos = pygame.mouse.get_pos()
 				x = pos[0] // colsz
@@ -57,6 +57,7 @@ def draw_start_pattern(board):
 				if not board.get_cell(x,y).alive:
 					board.get_cell(x,y).alive = True
 					to_update.append(board.get_cell(x,y))
+			# Right mouse click turns cells off
 			if pygame.mouse.get_pressed()[2]:
 				pos = pygame.mouse.get_pos()
 				x = pos[0] // colsz
@@ -95,16 +96,14 @@ def game_of_life_loop(board):
 
 				cell = board.get_cell(x,y)
 				state = next_state(cell,board)
-				if state is "lives":
+				if state:
 					new_board.get_cell(x,y).alive = True
 					to_update.append(new_board.get_cell(x,y))
-				elif state is "dies":
+				elif not state:
 					new_board.get_cell(x,y).alive = False
 					to_update.append(new_board.get_cell(x,y))
-				elif state is "nothing" and board.get_cell(x,y).alive == True:
-					new_board.get_cell(x,y).alive = True
-					to_update.append(new_board.get_cell(x,y))
-		board = copy.deepcopy(new_board)
+					
+		board = new_board
 	
 	
 	
@@ -112,7 +111,8 @@ def game_of_life_loop(board):
 			update_cell(s)
 	
 		pygame.display.flip()
-		clock.tick(6)
+		# Higher number, higher speed
+		clock.tick(12)
 	
 NEIGHBOURS = [ [-1,-1], [-1,0], [-1, 1], [0,-1], [0,1], [1,-1], [1,0], [1,1] ]
 
