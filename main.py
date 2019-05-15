@@ -50,13 +50,19 @@ def draw_start_pattern(board):
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				sys.exit()
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				if pygame.mouse.get_pressed()[0]:
-					pos = pygame.mouse.get_pos()
-					x = pos[0] // colsz
-					y = pos[1] // rowsz
-					print(board.get_cell(x,y).alive)
-					board.get_cell(x,y).alive = not board.get_cell(x,y).alive
+			if pygame.mouse.get_pressed()[0]:
+				pos = pygame.mouse.get_pos()
+				x = pos[0] // colsz
+				y = pos[1] // rowsz
+				if not board.get_cell(x,y).alive:
+					board.get_cell(x,y).alive = True
+					to_update.append(board.get_cell(x,y))
+			if pygame.mouse.get_pressed()[2]:
+				pos = pygame.mouse.get_pos()
+				x = pos[0] // colsz
+				y = pos[1] // rowsz
+				if board.get_cell(x,y).alive:
+					board.get_cell(x,y).alive = False
 					to_update.append(board.get_cell(x,y))
 			if event.type==pygame.KEYDOWN:
 				if event.key==pygame.K_RETURN:
@@ -67,7 +73,7 @@ def draw_start_pattern(board):
 			update_cell(s)
 
 		pygame.display.flip()
-		clock.tick(30)
+		clock.tick(60)
 		
 def game_of_life_loop(board):
 	while True:
@@ -89,8 +95,6 @@ def game_of_life_loop(board):
 
 				cell = board.get_cell(x,y)
 				state = next_state(cell,board)
-				if state is not "nothing":
-					print(state)
 				if state is "lives":
 					new_board.get_cell(x,y).alive = True
 					to_update.append(new_board.get_cell(x,y))
