@@ -1,2 +1,0 @@
-Draw start pattern, press Enter to start the game.
-Press Enter to reset and start over.
