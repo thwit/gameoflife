@@ -8,3 +8,5 @@ class Board:
 		
 	def get_cell(self,x,y):
 		return self.grid[y][x]
+	def reset(self):
+		self.grid = [[Cell(j,i) for j in range(self.width)] for i in range(self.height)]

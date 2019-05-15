@@ -44,7 +44,71 @@ def next_state(cell,board):
 			return "lives"
 	return "nothing"
 	
+def draw_start_pattern(board):
+	while True:
+		to_update = []
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				sys.exit()
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				if pygame.mouse.get_pressed()[0]:
+					pos = pygame.mouse.get_pos()
+					x = pos[0] // colsz
+					y = pos[1] // rowsz
+					print(board.get_cell(x,y).alive)
+					board.get_cell(x,y).alive = not board.get_cell(x,y).alive
+					to_update.append(board.get_cell(x,y))
+			if event.type==pygame.KEYDOWN:
+				if event.key==pygame.K_RETURN:
+					game_of_life_loop(board)
+					return
+
+		for s in to_update:
+			update_cell(s)
+
+		pygame.display.flip()
+		clock.tick(30)
+		
+def game_of_life_loop(board):
+	while True:
+		to_update = []
+		new_board = Board(cols,rows)
+		
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				sys.exit()
+			if event.type==pygame.KEYDOWN:
+				if event.key==pygame.K_RETURN:
+					board.reset()
+					draw_grid(board)
+					draw_start_pattern(board)
+					return
+		
+		for x in range(cols):
+			for y in range(rows):
+
+				cell = board.get_cell(x,y)
+				state = next_state(cell,board)
+				if state is not "nothing":
+					print(state)
+				if state is "lives":
+					new_board.get_cell(x,y).alive = True
+					to_update.append(new_board.get_cell(x,y))
+				elif state is "dies":
+					new_board.get_cell(x,y).alive = False
+					to_update.append(new_board.get_cell(x,y))
+				elif state is "nothing" and board.get_cell(x,y).alive == True:
+					new_board.get_cell(x,y).alive = True
+					to_update.append(new_board.get_cell(x,y))
+		board = copy.deepcopy(new_board)
 	
+	
+	
+		for s in to_update:
+			update_cell(s)
+	
+		pygame.display.flip()
+		clock.tick(6)
 	
 NEIGHBOURS = [ [-1,-1], [-1,0], [-1, 1], [0,-1], [0,1], [1,-1], [1,0], [1,1] ]
 
@@ -78,86 +142,20 @@ clock = pygame.time.Clock()
 # board.get_cell(8,13).alive = True
 
 # Rabbit thingy
-board.get_cell(30,30).alive = True
-board.get_cell(30,29).alive = True
-board.get_cell(30,28).alive = True
-board.get_cell(33,28).alive = True
-board.get_cell(34,27).alive = True
-board.get_cell(35,27).alive = True
-board.get_cell(30,26).alive = True
-board.get_cell(31,26).alive = True
-board.get_cell(33,26).alive = True
-board.get_cell(31,25).alive = True
+# board.get_cell(30,30).alive = True
+# board.get_cell(30,29).alive = True
+# board.get_cell(30,28).alive = True
+# board.get_cell(33,28).alive = True
+# board.get_cell(34,27).alive = True
+# board.get_cell(35,27).alive = True
+# board.get_cell(30,26).alive = True
+# board.get_cell(31,26).alive = True
+# board.get_cell(33,26).alive = True
+# board.get_cell(31,25).alive = True
 
 
-to_update = []
 
 draw_grid(board)
 
-flag = True
-
-while flag:
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			sys.exit()
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			if pygame.mouse.get_pressed()[0]:
-				pos = pygame.mouse.get_pos()
-				x = pos[0] // colsz
-				y = pos[1] // rowsz
-				print(board.get_cell(x,y).alive)
-				board.get_cell(x,y).alive = not board.get_cell(x,y).alive
-				to_update.append(board.get_cell(x,y))
-		if event.type==pygame.KEYDOWN:
-			if event.key==pygame.K_RETURN:
-				flag = False
-
-	for s in to_update:
-		update_cell(s)
-	
-	to_update = []
-	pygame.display.flip()
-	clock.tick(30)
-
-while True:
-	new_board = Board(cols,rows)
-	
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			sys.exit()
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			if pygame.mouse.get_pressed()[0]:
-				pos = pygame.mouse.get_pos()
-				x = pos[0] // colsz
-				y = pos[1] // rowsz
-				print(board.get_cell(x,y).alive)
-				board.get_cell(x,y).alive = not board.get_cell(x,y).alive
-				to_update.append(board.get_cell(x,y))
-	
-	
-	for x in range(cols):
-		for y in range(rows):
-
-			cell = board.get_cell(x,y)
-			state = next_state(cell,board)
-			if state is "lives":
-				new_board.get_cell(x,y).alive = True
-				to_update.append(new_board.get_cell(x,y))
-			elif state is "dies":
-				new_board.get_cell(x,y).alive = False
-				to_update.append(new_board.get_cell(x,y))
-			elif state is "nothing" and board.get_cell(x,y).alive == True:
-				new_board.get_cell(x,y).alive = True
-				to_update.append(new_board.get_cell(x,y))
-	board = copy.deepcopy(new_board)
-	
-	
-	
-	for s in to_update:
-		update_cell(s)
-	
-	to_update = []
-	pygame.display.flip()
-	clock.tick(6)
-
-	
+draw_start_pattern(board)
+game_of_life_loop(board)	
