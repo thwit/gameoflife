@@ -1,3 +1,4 @@
+# Basic instructions
 1. Draw start pattern
 	1.1 Left mouse click turns cells on
 	1.2 Right mouse click turns cells off
